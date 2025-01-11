@@ -12,7 +12,7 @@ import '../../../core/theming/styles.dart';
 import '../logic/login_cubit.dart';
 
 class LoginScreen extends StatelessWidget {
-  const  LoginScreen({super.key});
+  const LoginScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +56,6 @@ class LoginScreen extends StatelessWidget {
                   const LoginBlocListener(),
                 ],
               ),
-
             ],
           ),
         ),
@@ -66,8 +65,7 @@ class LoginScreen extends StatelessWidget {
 
   void validateThenDoLogin(BuildContext context) {
     if (context.read<LoginCubit>().formKey.currentState!.validate()) {
-      context.read<LoginCubit>().emitLoginState(LoginRequestBody(email: context.read<LoginCubit>().emailController.text, password: context.read<LoginCubit>().passwordController.text));
-
+      context.read<LoginCubit>().emitLoginState();
     }
   }
 }
