@@ -40,7 +40,7 @@ class PasswordValidation extends StatelessWidget {
       children: [
         CircleAvatar(
           radius: 5,
-          backgroundColor: Colors.grey,
+          backgroundColor: isValid ? Colors.green : ColorsManager.gray ,
         ),
         horizontalSpace(6),
         Text(
