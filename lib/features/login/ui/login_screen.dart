@@ -1,6 +1,5 @@
 import 'package:doc_doc/core/helpers/spacing.dart';
 import 'package:doc_doc/core/widgets/app_text_button.dart';
-import 'package:doc_doc/features/login/data/models/login_request_body.dart';
 import 'package:doc_doc/features/login/ui/widgets/dont_have_account_text.dart';
 import 'package:doc_doc/features/login/ui/widgets/email_and_password.dart';
 import 'package:doc_doc/features/login/ui/widgets/login_bloc_listener.dart';
