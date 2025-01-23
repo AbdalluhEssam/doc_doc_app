@@ -26,9 +26,12 @@ jobs:
     - name: Setup Ruby
       uses: ruby/setup-ruby@v1
       with:
-        ruby-version: "3.4.1" # تحديث الإصدار إلى 3.4.1 لتطابق بيئة العمل
+        ruby-version: "3.4.1"
         bundler-cache: true
         working-directory: android
+
+    - name: Install Bundler
+      run: gem install bundler
 
     - name: Add platform to Gemfile.lock
       run: |
