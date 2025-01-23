@@ -11,5 +11,4 @@ void main() async{
   await ScreenUtil.ensureScreenSize();
   setupGetIt();
   runApp(DocApp(appRouter: AppRouter()));
-}
 // 1//03JbeMaVai41cCgYIARAAGAMSNwF-L9Ir92h_mBiPfixbyGV560yS_VqJ_9GQgavqS07ABBtEHDOe4VbqbMJZecL4dAeIc3w9jR4
