@@ -33,11 +33,6 @@ jobs:
     - name: Install Bundler
       run: gem install bundler
 
-    - name: Add platform to Gemfile.lock
-      run: |
-        bundle lock --add-platform x86_64-linux
-      working-directory: android
-
     - name: Ensure Clean Environment
       run: |
         rm -rf ~/.bundle/cache
