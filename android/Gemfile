@@ -4,3 +4,7 @@ gem "fastlane"
 
 plugins_path = File.join(File.dirname(__FILE__), 'fastlane', 'Pluginfile')
 eval_gemfile(plugins_path) if File.exist?(plugins_path)
+platform :x86_64_linux do
+    gem 'your_gem'
+  end
+  
