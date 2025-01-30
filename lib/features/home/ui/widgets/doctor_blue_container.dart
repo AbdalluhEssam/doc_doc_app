@@ -1,5 +1,4 @@
 import 'package:doc_doc/core/helpers/spacing.dart';
-import 'package:doc_doc/core/theming/colors.dart';
 import 'package:doc_doc/core/theming/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -13,7 +12,6 @@ class DoctorBlueContainer extends StatelessWidget {
       height: 195.h,
       child: Stack(
         alignment: Alignment.bottomCenter,
-        // fit: StackFit.passthrough,
         children: [
           Container(
             height: 165.h,
@@ -23,6 +21,7 @@ class DoctorBlueContainer extends StatelessWidget {
                 // color: ColorsManager.mainBlue,
                 borderRadius: BorderRadius.circular(24.r),
                 image: DecorationImage(
+                    fit: BoxFit.cover,
                     image: AssetImage("assets/images/home_blue_pattern.png"))),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
