@@ -1,10 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:doc_doc/core/helpers/spacing.dart';
-import 'package:doc_doc/core/theming/colors.dart';
 import 'package:doc_doc/core/theming/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
 
 class DoctorsListView extends StatelessWidget {
   const DoctorsListView({super.key});

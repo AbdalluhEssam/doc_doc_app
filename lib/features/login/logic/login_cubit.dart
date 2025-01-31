@@ -1,3 +1,4 @@
+import 'package:doc_doc/core/networking/api_error_handler.dart';
 import 'package:doc_doc/features/login/data/repos/login_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -24,7 +25,7 @@ class LoginCubit extends Cubit<LoginState> {
     );
     response.when(
         success: (loginResponse) => emit(LoginState.success(loginResponse)),
-        failure: (error) =>
-            emit(LoginState.failure(message: error.errors ?? '')));
+        failure: (error) => emit(LoginState.failure(
+            message: ApiErrorHandler.handle(error).message ?? '')));
   }
 }
