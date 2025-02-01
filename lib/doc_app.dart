@@ -1,6 +1,7 @@
 import 'package:doc_doc/core/routing/app_router.dart';
 import 'package:doc_doc/core/routing/routes.dart';
 import 'package:doc_doc/core/theming/colors.dart';
+import 'package:doc_doc/main_production.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -41,7 +42,8 @@ class DocApp extends StatelessWidget {
             primarySwatch: createMaterialColor(ColorsManager.mainBlue),
             scaffoldBackgroundColor: Colors.white),
         debugShowCheckedModeBanner: false,
-        initialRoute: Routes.homeScreen,
+        initialRoute:
+            isLoggedInUser ? Routes.homeScreen : Routes.onBoardingScreen,
         onGenerateRoute: appRouter.generateRoute,
       ),
     );
