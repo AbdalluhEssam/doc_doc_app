@@ -1,6 +1,5 @@
 import 'package:doc_doc/features/home/data/repos/home_repo.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 
 import 'home_state.dart';
 

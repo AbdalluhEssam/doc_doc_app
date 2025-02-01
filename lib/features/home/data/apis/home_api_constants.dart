@@ -1,3 +1,3 @@
 class HomeApiConstants {
-  static const String specializationEP = "/specialization";
+  static const String specializationEP = "/specialization/index";
 }

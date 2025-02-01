@@ -2,7 +2,6 @@ import 'package:dio/dio.dart';
 import 'package:doc_doc/core/networking/api_service.dart';
 import 'package:doc_doc/features/home/data/apis/home_api_service.dart';
 import 'package:doc_doc/features/home/data/repos/home_repo.dart';
-import 'package:doc_doc/features/home/logic/cubit/home_cubit.dart';
 import 'package:doc_doc/features/login/logic/login_cubit.dart';
 import 'package:doc_doc/features/sign_up/data/repos/sign_up_repo.dart';
 import 'package:doc_doc/features/sign_up/logic/sign_up_cubit.dart';
