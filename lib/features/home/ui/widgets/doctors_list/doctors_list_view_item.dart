@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class DoctorsListViewItem extends StatelessWidget {
-  final Doctors doctorModel;
+  final Doctors? doctorModel;
   const DoctorsListViewItem({super.key, required this.doctorModel});
 
   @override
@@ -52,18 +52,18 @@ class DoctorsListViewItem extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  doctorModel.name ?? 'Abdalluh Essam',
+                  doctorModel?.name ?? 'Abdalluh Essam',
                   style: TextStyles.font18DarkBlueBold,
                   overflow: TextOverflow.ellipsis,
                 ),
                 verticalSpace(5),
                 Text(
-                  '${doctorModel.degree} | ${doctorModel.phone}',
+                  '${doctorModel?.degree} | ${doctorModel?.phone}',
                   style: TextStyles.font12GrayMedium,
                 ),
                 verticalSpace(5),
                 Text(
-                  doctorModel.email ?? 'abdallh.essam@gmail.com',
+                  doctorModel?.email ?? 'abdallh.essam@gmail.com',
                   style: TextStyles.font12GrayMedium,
                 ),
               ],
