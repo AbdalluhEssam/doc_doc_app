@@ -13,7 +13,7 @@ class HomeRepo {
       final response = await _homeApiService.getSpecializations();
       return ApiResult.success(response);
     } catch (error) {
-      return ApiResult.failure(ApiErrorHandler.handle(error).errors);
+      return ApiResult.failure(ApiErrorHandler.handle(error));
     }
   }
 }
