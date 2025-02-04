@@ -15,8 +15,8 @@ class LoginRepo {
     try {
       final response = await _apiService.login(loginRequestBody);
       return ApiResult.success(response);
-    } catch (e) {
-      return ApiResult.failure(ApiErrorHandler.handle(e));
+    } catch (error) {
+      return ApiResult.failure(ApiErrorHandler.handle(error).errors);
     }
   }
 }

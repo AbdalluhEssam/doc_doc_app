@@ -1,3 +1,4 @@
+import 'package:doc_doc/core/networking/api_error_handler.dart';
 import 'package:doc_doc/features/sign_up/logic/sign_up_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,7 +14,8 @@ class SignupCubit extends Cubit<SignupState> {
   TextEditingController emailController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-  TextEditingController passwordConfirmationController = TextEditingController();
+  TextEditingController passwordConfirmationController =
+      TextEditingController();
   final formKey = GlobalKey<FormState>();
 
   void emitSignupStates() async {
@@ -31,7 +33,7 @@ class SignupCubit extends Cubit<SignupState> {
     response.when(success: (signupResponse) {
       emit(SignupState.signupSuccess(signupResponse));
     }, failure: (apiErrorModel) {
-      emit(SignupState.signupError(apiErrorModel));
+      emit(SignupState.signupError(ApiErrorHandler.handle(apiErrorModel)));
     });
   }
 }
