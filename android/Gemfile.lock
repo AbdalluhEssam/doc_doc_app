@@ -220,10 +220,12 @@ GEM
 
 PLATFORMS
   x64-mingw-ucrt
+  x86_64-linux
 
 DEPENDENCIES
   fastlane
   fastlane-plugin-firebase_app_distribution
+  your_gem
 
 BUNDLED WITH
    2.6.2
