@@ -1,4 +1,3 @@
-import 'package:doc_doc/core/networking/api_error_handler.dart';
 import 'package:doc_doc/features/sign_up/logic/sign_up_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
