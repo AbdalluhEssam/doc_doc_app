@@ -1,39 +1,85 @@
-# 🔧 التحديثات الجديدة
+# 📚 توثيق مشروع الدردشة بفلاटर + فايربيس (شرح تعليمي مبسّط)
 
-تم حل المشكلتين التي ذكرتها:
+هذا المستند يشرح مشروع الدردشة خطوة بخطوة باللغة العربية، مع أمثلة من الكود وطريقة التشغيل والتأمين والتنظيف. مناسب لشرح جامعي وللتطبيق العملي مع الطلاب.
 
-## ✅ المشكلة الأولى: حفظ حالة تسجيل الدخول
+## ✅ ما الذي ستتعلّمه؟
 
-**المشكلة**: عند إعادة تشغيل التطبيق، كان يرجع للـ LoginScreen حتى لو كان المستخدم مسجل دخول.
+- إعداد Flutter + Firebase للمشروع
+- تفعيل تسجيل الدخول بالإيميل وكلمة المرور
+- حفظ بيانات المستخدمين في Firestore
+- محادثات خاصة 1-إلى-1 مع تخزين الرسائل لحظيًا
+- قواعد الأمان Firestore المناسبة للمشروع
+- تشغيل التطبيق على أندرويد وiOS
+- استكشاف الأخطاء وتنظيف المشروع/البيانات
 
-**الحل**:
-- تم إضافة `AuthWrapper` في ملف `main.dart`
-- يستخدم `StreamBuilder` مع `FirebaseAuth.instance.authStateChanges()`
-- يتحقق تلقائياً من حالة المستخدم عند فتح التطبيق:
-  - إذا كان مسجل دخول → ينتقل مباشرة لـ `UsersScreen`
-  - إذا لم يكن مسجل → يعرض `LoginScreen`
+---
 
-### الكود المضاف:
+## المتطلبات قبل البدء
+
+- Flutter SDK (مُثبت على جهازك) — تأكد أن `flutter doctor` لا يظهر أخطاء حرجة
+- حساب Firebase مجاني
+- محرر كود (VS Code أو Android Studio)
+- على macOS لتشغيل iOS: Xcode مُثبت وحساب مطوّر (للتجربة على جهاز فعلي)
+
+اختياري (يوصَى به للمطورين):
+- Node.js + Firebase CLI لإدارة القواعد والنشر: `npm i -g firebase-tools`
+
+---
+
+## لمحة عن بنية المشروع
+
+```
+lib/
+├─ main.dart              // تهيئة Firebase وتوجيه الشاشات حسب حالة الدخول
+├─ login_screen.dart      // شاشة تسجيل الدخول
+├─ signup_screen.dart     // شاشة إنشاء حساب جديد + حفظ المستخدم في Firestore
+├─ users_screen.dart      // قائمة المستخدمين + فتح محادثة خاصة
+├─ chat_screen.dart       // شاشة محادثة خاصة 1-إلى-1
+└─ user_data_fixer.dart   // أداة للتأكد/إصلاح بيانات المستخدم في Firestore
+
+firestore.rules           // قواعد أمان Firestore الجاهزة
+firebase.json             // إعدادات FlutterFire CLI
+```
+
+### تهيئة Firebase داخل التطبيق
+
+في `main.dart`:
+
+```dart
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  runApp(const MyApp());
+}
+```
+
+تُقرأ الإعدادات من `lib/firebase_options.dart` (مولَّد بواسطة FlutterFire CLI). هذا المشروع مهيأ لِـ Android و iOS.
+
+---
+
+## تدفّق عمل التطبيق (User Flow)
+
+1) المستخدم يفتح التطبيق → إن كان مسجّل دخولًا يُحوَّل مباشرة إلى قائمة المستخدمين؛ وإلا فسيظهر له نموذج تسجيل الدخول.
+2) من قائمة المستخدمين يختار مستخدمًا آخر لبدء محادثة خاصة.
+3) تُخزّن الرسائل لحظيًا في Firestore وتظهر فورًا لدى الطرفين.
+
+هذا كله يتم عبر المكوّن `AuthWrapper` في `main.dart`:
+
 ```dart
 class AuthWrapper extends StatelessWidget {
   const AuthWrapper({super.key});
-
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
+          return const Scaffold(body: Center(child: CircularProgressIndicator()));
         }
-
         if (snapshot.hasData && snapshot.data != null) {
-          return const UsersScreen(); // مسجل دخول
+          return const UsersScreen();
         }
-
-        return const LoginScreen(); // غير مسجل
+        return const LoginScreen();
       },
     );
   }
@@ -42,137 +88,162 @@ class AuthWrapper extends StatelessWidget {
 
 ---
 
-## ✅ المشكلة الثانية: ظهور المستخدمين
+## نموذج البيانات في Firestore
 
-**المشكلة**: المستخدمون لا يظهرون بشكل صحيح، أو يتأخر ظهورهم، أو لا يظهرون حتى لو كان التطبيق مفتوح.
+```
+users (collection)
+  └─ {userId} (document)
+      ├─ uid: String
+      ├─ email: String
+      └─ createdAt: Timestamp
 
-**الحلول المطبقة**:
+private_chats (collection)
+  └─ {chatId} (document)      // chatId = "uid1_uid2" بترتيب أبجدي
+      └─ messages (subcollection)
+          └─ {messageId} (document)
+              ├─ text: String
+              ├─ sender: String (UID)
+              └─ timestamp: Timestamp
+```
 
-### 1. إضافة زر Refresh ⟳
-- يمكنك الآن تحديث قائمة المستخدمين يدوياً بالضغط على زر Refresh
-- الزر موجود في الـ AppBar بجانب زر Logout
+إنشاء chatId يتم بترتيب UIDs أبجديًا لضمان أن كلا الطرفين يفتحان نفس المحادثة دائمًا:
 
-### 2. تحسين عرض البريد الإلكتروني
-- يظهر الآن بريدك الإلكتروني في الـ AppBar
-- لتعرف أي حساب أنت مسجل دخول به
+```dart
+final currentUserId = _auth.currentUser!.uid;
+final List<String> ids = [currentUserId, widget.otherUserId];
+ids.sort();
+_chatId = '${ids[0]}_${ids[1]}';
+```
 
-### 3. تحسين رسائل الأخطاء
-- إذا حدث خطأ في تحميل المستخدمين:
-  - يظهر رمز خطأ واضح ❌
-  - رسالة الخطأ بالتفصيل
-  - زر "Retry" لإعادة المحاولة
+إرسال الرسالة في `chat_screen.dart`:
 
-### 4. تحسين حالة التحميل
-- عند التحميل يظهر:
-  - دائرة التحميل
-  - نص "Loading users..."
-
----
-
-## 🎯 كيفية الاستخدام
-
-### الآن عند فتح التطبيق:
-1. **أول مرة**: يفتح على LoginScreen
-2. **بعد تسجيل الدخول**: يحفظ حالتك تلقائياً
-3. **عند إعادة فتح التطبيق**: ينتقل مباشرة لـ UsersScreen (لن تحتاج تسجيل دخول مرة أخرى!)
-
-### لتحديث قائمة المستخدمين:
-1. اضغط على زر الـ Refresh (⟳) في الأعلى
-2. سيتم تحديث القائمة فوراً
-
-### إذا لم تظهر المستخدمين:
-1. تأكد من اتصالك بالإنترنت
-2. اضغط على زر Refresh
-3. إذا ظهر خطأ، اضغط على "Retry"
-4. تحقق من Firestore Rules أنها مفعّلة صح
+```dart
+await _firestore
+  .collection('private_chats')
+  .doc(_chatId)
+  .collection('messages')
+  .add({
+    'text': _messageController.text.trim(),
+    'sender': _auth.currentUser!.uid,
+    'timestamp': FieldValue.serverTimestamp(),
+  });
+```
 
 ---
 
-## 🔥 ملاحظات مهمة
+## قواعد الأمان Firestore (هامة جدًا)
 
-### Firestore Rules
-تأكد أن الـ Rules مضبوطة صح في Firebase Console:
+ملف `firestore.rules` في المشروع يحتوي على القواعد المناسبة. هذا ملخّصها:
 
 ```javascript
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     match /users/{userId} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null && request.auth.uid == userId;
+      allow read: if request.auth != null; // أي مستخدم مسجّل دخول يمكنه قراءة كل المستخدمين
+      allow create, update: if request.auth != null && request.auth.uid == userId; // يكتب فقط على وثيقته
+      allow delete: if false;
     }
-    
+
     match /private_chats/{chatId} {
       function isParticipant() {
         let userIds = chatId.split('_');
         return request.auth != null && request.auth.uid in userIds;
       }
-      
       match /messages/{messageId} {
         allow read: if isParticipant();
-        allow create: if isParticipant() && request.resource.data.sender == request.auth.uid;
+        allow create: if isParticipant() &&
+                       request.resource.data.sender == request.auth.uid &&
+                       request.resource.data.keys().hasAll(['text','sender','timestamp']);
+        allow update, delete: if false;
       }
     }
   }
 }
 ```
 
-### لتطبيق الـ Rules:
-```bash
-firebase deploy --only firestore:rules
+نشر القواعد:
+- من Firebase Console → Firestore → Rules → لصق القواعد → Publish
+- أو عبر Firebase CLI: `firebase deploy --only firestore:rules`
+
+ملاحظة: بدون نشر القواعد لن تعمل قراءة/كتابة البيانات كما تتوقع.
+
+---
+
+## شرح سريع لملفات الواجهات
+
+1) `login_screen.dart`
+- حقول Email/Password + تسجيل الدخول عبر FirebaseAuth
+- معالجة أخطاء شائعة مثل user-not-found و wrong-password
+
+2) `signup_screen.dart`
+- إنشاء حساب جديد عبر FirebaseAuth
+- حفظ بيانات المستخدم في `users/{uid}` مع `createdAt`
+- استخدام `SetOptions(merge: true)` لضمان عدم فقدان بيانات سابقة
+
+3) `users_screen.dart`
+- يعرض جميع المستخدمين (عدا نفسك)
+- زر Refresh للتحديث
+- يحاول التأكد من وجود بياناتك في Firestore عبر `UserDataFixer.ensureUserDataExists()`
+- عند الضغط على مستخدم → يفتح محادثة خاصة معه
+
+4) `chat_screen.dart`
+- بث حي للرسائل عبر `StreamBuilder` مرتبة تنازليًا بالتاريخ
+- فقاعات دردشة ملوّنة بحسب المرسل (أنت/الطرف الآخر)
+- عرض توقيت مبسّط HH:mm عند وجود `timestamp`
+
+5) `user_data_fixer.dart`
+- أداة فحص/إصلاح لبيانات المستخدم الحالي في Firestore
+- تنشئ الوثيقة إذا لم تكن موجودة، وتُكمل الحقول الناقصة
+
+---
+
+## تشغيل المشروع
+
+1) تثبيت الحزم:
+```
+flutter pub get
+```
+2) أندرويد: تأكد من وجود `android/app/google-services.json`
+
+3) iOS: تأكد من وجود `ios/Runner/GoogleService-Info.plist`
+
+4) شغّل التطبيق:
+```
+flutter run
 ```
 
----
-
-## 🧪 اختبار التحديثات
-
-1. **اختبار حفظ حالة الدخول**:
-   - سجل دخول
-   - أغلق التطبيق تماماً
-   - افتحه مرة أخرى
-   - ✅ يجب أن يفتح مباشرة على UsersScreen
-
-2. **اختبار ظهور المستخدمين**:
-   - سجل دخول بحسابين مختلفين على جهازين
-   - تأكد أن كل مستخدم يرى الآخر في القائمة
-   - جرب زر Refresh
-   - ✅ يجب أن يظهر كل المستخدمين
-
-3. **اختبار زر Logout**:
-   - اضغط على زر Logout
-   - ✅ يجب أن يرجع لـ LoginScreen
-   - أغلق التطبيق وافتحه
-   - ✅ يجب أن يفتح على LoginScreen (لأنك عملت Logout)
+إذا ظهرت مشكلة في منصّة معيّنة، أعد تشغيل `flutterfire configure` لتوليد `firebase_options.dart` عند اللزوم.
 
 ---
 
-## 📱 التحسينات المضافة
+## استكشاف الأخطاء الشائعة
 
-1. ✅ حفظ تلقائي لحالة تسجيل الدخول
-2. ✅ زر Refresh لتحديث قائمة المستخدمين
-3. ✅ عرض البريد الإلكتروني في AppBar
-4. ✅ رسائل أخطاء واضحة مع زر Retry
-5. ✅ شاشة تحميل محسنة
-6. ✅ StreamBuilder محسّن للأداء الأفضل
+- Permission denied في Firestore: تأكد أنك نشرت القواعد أعلاه، وأن المستخدم مسجّل دخول.
+- الرسائل لا تظهر: افحص أن `private_chats/{chatId}/messages` يتلقى وثائق جديدة، وأن `orderBy('timestamp', descending: true)` مع `serverTimestamp()` لا يعطي قيم null في البداية (الواجهة تتعامل معها).
+- المستخدمون لا يظهرون: تأكد من وجود وثائق في `users`، وإذا كان لديك مستخدم قديم افتح `UsersScreen` ليتم الإصلاح التلقائي، ثم اضغط Refresh.
+- تسجيل الدخول يفشل: تحقق من صحة الإيميل/كلمة المرور ورسائل الخطأ في الواجهة.
 
 ---
 
-## 🚀 الخطوات التالية (اختياري)
+## ملحوظات تعليمية للمحاضِر
 
-إذا أردت تحسينات إضافية:
-
-1. **إضافة صور للمستخدمين**
-2. **إظهار حالة المستخدم (Online/Offline)**
-3. **عدد الرسائل غير المقروءة**
-4. **إشعارات Push**
-5. **البحث عن المستخدمين**
+- اشرح للطلاب لماذا نستخدم chatId ثابتًا بترتيب أبجدي، وكيف يؤثر ذلك على الأمان وبساطة الاستعلام.
+- ناقش قواعد الأمان وكيف تمنع الاطلاع على محادثات الآخرين.
+- وضّح الفرق بين client SDK و Admin SDK (لماذا لا يمكن تعداد كل مستخدمي Auth من العميل؟).
+- اقترح تحسينات: أسماء عرض وصور شخصية، مؤشرات الكتابة، إشعارات Push، مرفقات صور/فيديو.
 
 ---
 
-تم حل المشكلتين بنجاح! 🎉
+## تنظيف المشروع والبيانات
 
-الآن التطبيق:
-- ✅ يحفظ حالة تسجيل الدخول
-- ✅ المستخدمون يظهرون بشكل أفضل وأسرع
-- ✅ يمكنك تحديث القائمة يدوياً
-- ✅ رسائل أخطاء واضحة
+راجع دليل التنظيف الكامل هنا:
+- docs/CLEANUP_AR.md — تنظيف Flutter (build/Pods) + تنظيف بيانات Firebase (حذف مجموعات/مستخدمين) بأمان.
+
+---
+
+## موارد إضافية
+
+- Flutter: https://docs.flutter.dev/
+- Firebase Auth: https://firebase.google.com/docs/auth
+- Firestore: https://firebase.google.com/docs/firestore
