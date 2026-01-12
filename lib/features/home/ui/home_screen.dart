@@ -1,3 +1,9 @@
+import 'package:doc_doc/core/helpers/spacing.dart';
+import 'package:doc_doc/features/home/ui/widgets/doctors_list/doctor_bloc_builder.dart';
+import 'package:doc_doc/features/home/ui/widgets/doctor_blue_container.dart';
+import 'package:doc_doc/features/home/ui/widgets/doctor_speciality_see_all.dart';
+import 'package:doc_doc/features/home/ui/widgets/home_top_bar.dart';
+import 'package:doc_doc/features/home/ui/widgets/specializations_list/specialzations_bloc_builder.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -6,18 +12,24 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home Screen'),
-        centerTitle: true,
-      ),
-      body: const Center(
-        child: Text('This is the Home Screen'),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // context.pushNamed(Routes.loginScreen);
-        },
-        child: const Icon(Icons.login),
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Container(
+          padding: EdgeInsets.fromLTRB(20, 16, 20, 28),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const HomeTopBar(),
+              const DoctorBlueContainer(),
+              verticalSpace(24),
+              const DoctorSpecialitySeeAll(),
+              verticalSpace(18),
+              SpecialzationsBlocBuilder(),
+              verticalSpace(8),
+              const DoctorsBlocBuilder(),
+            ],
+          ),
+        ),
       ),
     );
   }

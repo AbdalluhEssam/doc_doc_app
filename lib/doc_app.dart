@@ -1,8 +1,10 @@
 import 'package:doc_doc/core/routing/app_router.dart';
 import 'package:doc_doc/core/routing/routes.dart';
 import 'package:doc_doc/core/theming/colors.dart';
+import 'package:doc_doc/main_production.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 MaterialColor createMaterialColor(Color color) {
   List strengths = <double>[.05];
   Map<int, Color> swatch = {};
@@ -37,13 +39,12 @@ class DocApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Doc Doc App',
         theme: ThemeData(
-          primarySwatch: createMaterialColor(ColorsManager.mainBlue),
-          scaffoldBackgroundColor: Colors.white
-        ),
+            primarySwatch: createMaterialColor(ColorsManager.mainBlue),
+            scaffoldBackgroundColor: Colors.white),
         debugShowCheckedModeBanner: false,
-        initialRoute: Routes.onBoardingScreen,
+        initialRoute:
+            isLoggedInUser ? Routes.homeScreen : Routes.onBoardingScreen,
         onGenerateRoute: appRouter.generateRoute,
-
       ),
     );
   }
