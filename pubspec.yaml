@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.3+1
+version: 1.0.4+1
 
 environment:
   sdk: ^3.6.0
@@ -28,44 +28,34 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  cached_network_image: ^3.4.1
+  cupertino_icons: ^1.0.8
+  dio: ^5.7.0
+  easy_localization: ^3.0.7
+  firebase_core: ^3.10.0
+  firebase_messaging: ^15.2.0
   flutter:
     sdk: flutter
-  # State management
   flutter_bloc: ^8.1.6
-  # Code generation (Mainly used whit Cubit & retrofit)
+  flutter_native_splash: ^2.4.4
+  flutter_screenutil: ^5.9.3
+  flutter_svg: ^2.0.16
   freezed: ^2.5.7
   freezed_annotation: ^2.4.4
-  # for dependency Injection
   get_it: ^8.0.3
-  # Annotation for the freezed code-generator.
+  intl: null
   json_annotation: ^4.9.0
-  json_serializable:
-  # Networking
-  dio: ^5.7.0
+  json_serializable: null
+  lottie: ^3.3.0
   pretty_dio_logger: ^1.4.0
   retrofit: ^4.4.2
   retrofit_generator: ^9.1.7
-
-  # Localization
-  intl:
-  easy_localization: ^3.0.7
-  # Utils
+  shared_preferences: ^2.5.1
   url_launcher: ^6.3.1
-  cached_network_image: ^3.4.1
-  lottie: ^3.3.0
-  flutter_native_splash: ^2.4.4
-  flutter_svg: ^2.0.16
-  flutter_screenutil: ^5.9.3
-  # Firebase Services
-  firebase_core: ^3.10.0
-  firebase_messaging: ^15.2.0
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.8
-
+  flutter_secure_storage: ^9.2.4
+    # easy way to add shimmer effect
+  shimmer: ^3.0.0
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
   build_runner: ^2.4.14
 
   # The "flutter_lints" package below contains a set of recommended lints to
@@ -74,10 +64,11 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
+  flutter_test:
+    sdk: flutter
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
-
 # The following section is specific to Flutter packages.
 flutter:
 
@@ -90,13 +81,10 @@ flutter:
   assets:
     - assets/images/
     - assets/svgs/
-
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
-
   # For details regarding adding assets from package dependencies, see
   # https://flutter.dev/to/asset-from-package
-
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
   # "family" key with the font family name, and a "fonts" key with a

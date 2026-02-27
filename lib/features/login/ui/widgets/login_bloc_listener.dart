@@ -1,4 +1,5 @@
 import 'package:doc_doc/core/helpers/extentions.dart';
+import 'package:doc_doc/core/networking/api_error_model.dart';
 import 'package:doc_doc/core/routing/routes.dart';
 import 'package:doc_doc/core/theming/colors.dart';
 import 'package:doc_doc/core/theming/styles.dart';
@@ -14,10 +15,12 @@ class LoginBlocListener extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener<LoginCubit, LoginState>(
       listenWhen: (previous, current) =>
-          current is Loading || current is Success || current is Error,
+          current is LoginLoading ||
+          current is LoginSuccess ||
+          current is LoginError,
       listener: (context, state) {
         state.whenOrNull(
-          loading: () {
+          loginLoading: () {
             showDialog(
               context: context,
               builder: (context) => Center(
@@ -27,12 +30,12 @@ class LoginBlocListener extends StatelessWidget {
               ),
             );
           },
-          success: (loginResponse) {
+          loginsSccess: (loginResponse) {
             context.pop();
             context.pushNamed(Routes.homeScreen);
           },
-          failure: (message) {
-            setupErrorState(context, message);
+          loginFailure: (apiErrorModel) {
+            setupErrorState(context, apiErrorModel);
           },
         );
       },
@@ -40,19 +43,29 @@ class LoginBlocListener extends StatelessWidget {
     );
   }
 
-  void setupErrorState(BuildContext context, String message) {
+  void setupErrorState(BuildContext context, ApiErrorModel apiErrorModel) {
     context.pop();
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        icon: Icon(Icons.error, color: Colors.red,size: 32,),
-        content: Text(message,style: TextStyles.font15DarkBlueMedium,),
+        icon: Icon(
+          Icons.error,
+          color: Colors.red,
+          size: 32,
+        ),
+        content: Text(
+          apiErrorModel.getAllErrorMessages(),
+          style: TextStyles.font15DarkBlueMedium,
+        ),
         actions: [
           TextButton(
             onPressed: () {
               context.pop();
             },
-            child: Text("Got it",style: TextStyles.font14BlueSemiBold,),
+            child: Text(
+              "Got it",
+              style: TextStyles.font14BlueSemiBold,
+            ),
           ),
         ],
       ),
